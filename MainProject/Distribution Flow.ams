@@ -1,6 +1,70 @@
 ## ams_version=1.0
 
 Model Main_Distribution_Flow {
+	Section ExcelImport {
+		StringParameter WorkbookName;
+		Procedure ReadFromExcel {
+			Body: {
+				if not FileSelect(WorkbookName,extension:".xlsx") then
+					return;
+				endif;
+				
+				axll::CloseAllWorkBooks;
+				axll::OpenWorkBook(WorkbookName);
+				
+				axll::SelectSheet("Location Type");
+				axll::ReadList(p_locationType,"A2:B200","C2:C200",ModeForUnknownElements :  1); 
+				
+				axll::SelectSheet("Distances Between Locations");
+				axll::ReadTable(p_distance, "A2:A200", "B1:DR1", "B2:DR200", 1);
+				
+				axll::SelectSheet("Demand");
+				axll::ReadList(p_demand,"A2:B200","C2:C200",ModeForUnknownElements :  1); 
+				
+				axll::SelectSheet("Supply");
+				axll::ReadList(p_supply,"A2:A100","B2:B100",ModeForUnknownElements :  1); 
+				
+				axll::SelectSheet("Stock");
+				axll::ReadList(p_minStock,"A2:A100","B2:B100",ModeForUnknownElements :  1);
+				axll::ReadList(p_maxStock,"A2:A100","C2:C100",ModeForUnknownElements :  1);
+				axll::ReadList(p_startStock,"A2:A100","E2:E100",ModeForUnknownElements :  1);
+				
+				axll::CloseAllWorkBooks;
+			}
+		}
+	}
+	Section ExcelData {
+		Set s_locations {
+			Index: l, m;
+		}
+		Set s_locationTypes {
+			Index: typ;
+		}
+		Set s_time {
+			Index: t;
+		}
+		Parameter p_locationType {
+			IndexDomain: (l,typ);
+		}
+		Parameter p_distance {
+			IndexDomain: (l,m);
+		}
+		Parameter p_demand {
+			IndexDomain: (l,t);
+		}
+		Parameter p_supply {
+			IndexDomain: l;
+		}
+		Parameter p_minStock {
+			IndexDomain: l;
+		}
+		Parameter p_maxStock {
+			IndexDomain: l;
+		}
+		Parameter p_startStock {
+			IndexDomain: l;
+		}
+	}
 	Procedure MainInitialization {
 		Comment: "Add initialization statements here that do NOT require any library being initialized already.";
 	}

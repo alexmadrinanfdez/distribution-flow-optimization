@@ -1,0 +1,8 @@
+# Mac
+.DS_Store
+
+# AIMMS
+backup
+log
+data
+PROTemp

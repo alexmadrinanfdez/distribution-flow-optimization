@@ -61,6 +61,25 @@
         }
       ]
     },
+    "primarypageaction": {
+      "aimms": {
+        "contents": [
+          "sp_primaryAction"
+        ],
+        "slices": [
+          {
+            "identifier": "sp_primaryAction",
+            "slice": [
+              {
+                "index": "webui::indexPageActionSpec",
+                "type": "free",
+                "value": "webui::indexPageActionSpec"
+              }
+            ]
+          }
+        ]
+      }
+    },
     "widgets": {
       "literal": [
         {
@@ -74,7 +93,7 @@
         {
           "uri": "Map",
           "layoutInfo": {
-            "width": "4",
+            "width": "5",
             "height": "4",
             "customPosition": ""
           }
@@ -196,10 +215,10 @@
       "literal": true
     },
     "center.latitude": {
-      "literal": 21.616579336740604
+      "literal": 20.59165400396276
     },
     "center.longitude": {
-      "literal": 79.63769584894182
+      "literal": 79.91015598177913
     },
     "heatmaps.__display_order__": {
       "literal": [

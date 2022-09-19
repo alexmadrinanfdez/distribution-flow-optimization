@@ -41,6 +41,7 @@ Model Main_Distribution_Flow {
 	Section ExcelData {
 		Set s_locations {
 			Index: l, m;
+			webui::AnnotationsIdentifier: sp_locationType;
 		}
 		Set s_locationTypes {
 			Index: typ;
@@ -51,6 +52,18 @@ Model Main_Distribution_Flow {
 		Parameter p_locationType {
 			IndexDomain: (l,typ);
 			Range: binary;
+		}
+		StringParameter sp_locationType {
+			IndexDomain: l;
+			Definition: {
+				if p_locationType(l, 'Factory') then
+					"Factory"
+				elseif p_locationType(l, 'NDC') then
+					"NDC"
+				elseif p_locationType(l, 'RDC') then
+					"RDC"
+				endif
+			}
 		}
 		Parameter p_distance {
 			IndexDomain: (l,m);
@@ -128,6 +141,17 @@ Model Main_Distribution_Flow {
 			Constraints: AllConstraints;
 			Variables: AllVariables;
 			Type: Automatic;
+		}
+	}
+	Section WebUISupport {
+		StringParameter sp_primaryAction {
+			IndexDomain: webui::indexPageActionSpec;
+			Comment: {
+				"displaytext	Solve
+				icon		aimms-paperplane
+				procedure	MainExecution
+				state		Active"
+			}
 		}
 	}
 	Procedure MainInitialization {

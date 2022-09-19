@@ -13,21 +13,21 @@ Model Main_Distribution_Flow {
 				axll::OpenWorkBook(WorkbookName);
 				
 				axll::SelectSheet("Location Type");
-				axll::ReadList(p_locationType,"A2:B200","C2:C200",ModeForUnknownElements :  1); 
+				axll::ReadList(p_locationType,"A2:B121","C2:C121",ModeForUnknownElements :  1); 
 				
 				axll::SelectSheet("Distances Between Locations");
-				axll::ReadTable(p_distance, "A2:A200", "B1:DR1", "B2:DR200", 1);
+				axll::ReadTable(p_distance, "A2:A122", "B1:DR1", "B2:DR122", 1);
 				
 				axll::SelectSheet("Demand");
-				axll::ReadList(p_demand,"A2:B200","C2:C200",ModeForUnknownElements :  1); 
+				axll::ReadList(p_demand,"A2:B337","C2:C337",ModeForUnknownElements :  1); 
 				
 				axll::SelectSheet("Supply");
-				axll::ReadList(p_supply,"A2:A100","B2:B100",ModeForUnknownElements :  1); 
+				axll::ReadList(p_supply,"A2:A6","B2:B6",ModeForUnknownElements :  1); 
 				
 				axll::SelectSheet("Stock");
-				axll::ReadList(p_minStock,"A2:A100","B2:B100",ModeForUnknownElements :  1);
-				axll::ReadList(p_maxStock,"A2:A100","C2:C100",ModeForUnknownElements :  1);
-				axll::ReadList(p_startStock,"A2:A100","E2:E100",ModeForUnknownElements :  1);
+				axll::ReadList(p_minStock,"A2:A9","B2:B9",ModeForUnknownElements :  1);
+				axll::ReadList(p_maxStock,"A2:A9","C2:C9",ModeForUnknownElements :  1);
+				axll::ReadList(p_startStock,"A2:A9","E2:E9",ModeForUnknownElements :  1);
 				
 				axll::CloseAllWorkBooks;
 			}

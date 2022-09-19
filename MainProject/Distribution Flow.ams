@@ -64,6 +64,52 @@ Model Main_Distribution_Flow {
 		Parameter p_startStock {
 			IndexDomain: l;
 		}
+		Parameter p_transportCost {
+			IndexDomain: (l,m);
+			Definition: {
+				if p_locationType(l,'Factory') and p_locationType(m,'NDC') then ! primary flow
+					0.8
+				elseif p_locationType(l,'NDC') and p_locationType(m,'RDC') then ! secondary flow
+					1.2
+				endif
+			}
+		}
+	}
+	Section MathModel {
+		Parameter p_isArcAllowed {
+			IndexDomain: (l,m);
+			Definition: {
+				p_locationType(l,'Factory') and p_locationType(m,'NDC') ! primary flow
+				or
+				p_locationType(l,'NDC') and p_locationType(m,'RDC')     ! secondary flow
+			}
+		}
+		Variable v_transportation {
+			IndexDomain: (l,m,t) | p_isArcAllowed(l,m);
+			Range: nonnegative;
+		}
+		Variable v_production {
+			IndexDomain: (l,t) | p_locationType(l,'Factory');
+			Range: nonnegative;
+		}
+		Constraint c_nodeEquilibrium {
+			IndexDomain: (l,t);
+			Definition: {
+				! input = output
+				v_production(l,t) + sum(m,v_transportation(m,l,t)) = sum(m,v_transportation(l,m,t)) + p_demand(l,t)
+			}
+		}
+		Variable v_objectiveFunction {
+			Range: free;
+			Definition: sum((l,m,t),v_transportation(l,m,t) * p_distance(l,m) * p_transportCost(l,m));
+		}
+		MathematicalProgram mp_minCost {
+			Objective: v_objectiveFunction;
+			Direction: minimize;
+			Constraints: AllConstraints;
+			Variables: AllVariables;
+			Type: Automatic;
+		}
 	}
 	Procedure MainInitialization {
 		Comment: "Add initialization statements here that do NOT require any library being initialized already.";
@@ -77,7 +123,11 @@ Model Main_Distribution_Flow {
 			or add statements that require the Data Management module to be initialized."
 		}
 	}
-	Procedure MainExecution;
+	Procedure MainExecution {
+		Body: {
+			solve mp_minCost;
+		}
+	}
 	Procedure PreMainTermination {
 		Body: {
 			return DataManagementExit();

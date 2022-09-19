@@ -1,0 +1,306 @@
+{
+  "version": "4.67.0",
+  "application": {
+    "aimms.widget.type": {
+      "literal": "application"
+    },
+    "browsername": {
+      "aimms": {
+        "contents": [
+          "webui::ClientBrowserName"
+        ]
+      }
+    },
+    "browsertimezone": {
+      "aimms": {
+        "contents": [
+          "webui::BrowserTimeZone"
+        ]
+      }
+    },
+    "ignoredst": {
+      "aimms": {
+        "contents": [
+          "webui::IgnoreDST"
+        ]
+      }
+    },
+    "theme.classic": {
+      "literal": "NOT_ALLOWED"
+    },
+    "timezone": {
+      "aimms": {
+        "contents": [
+          "webui::DisplayTimeZone"
+        ]
+      }
+    },
+    "timezone.dst.readonly": {
+      "aimms": {
+        "contents": [
+          "webui::DefaultDSTSettingForDisplayTimeZone"
+        ]
+      }
+    }
+  },
+  "pages/home": {
+    "aimms.widget.type": {
+      "literal": "page"
+    },
+    "bindings": {
+      "literal": [
+        {
+          "widgetUri": "Location Type",
+          "gridArea": "area-b",
+          "dndId": "area-aLocation Type0"
+        },
+        {
+          "widgetUri": "Map",
+          "gridArea": "area-a",
+          "dndId": "area-aMap1"
+        }
+      ]
+    },
+    "widgets": {
+      "literal": [
+        {
+          "uri": "Location Type",
+          "layoutInfo": {
+            "width": "2",
+            "height": "4",
+            "customPosition": ""
+          }
+        },
+        {
+          "uri": "Map",
+          "layoutInfo": {
+            "width": "4",
+            "height": "4",
+            "customPosition": ""
+          }
+        }
+      ]
+    }
+  },
+  "widgets/Location Type": {
+    "aimms.widget.type": {
+      "literal": "table"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "p_locationType"
+        ],
+        "prefix": "aimms",
+        "partition": {
+          "rowHeader": [
+            "l"
+          ],
+          "colHeader": [
+            "typ"
+          ],
+          "aggregated": [
+            "<IDENTIFIER-SET>"
+          ]
+        },
+        "slices": []
+      }
+    },
+    "contents.partition": {
+      "literal": {
+        "rowHeader": [
+          "l"
+        ],
+        "colHeader": [
+          "typ"
+        ],
+        "aggregated": [
+          "<IDENTIFIER-SET>"
+        ]
+      }
+    },
+    "name": {
+      "literal": "Location Type"
+    },
+    "title": {
+      "literal": "Location types"
+    }
+  },
+  "widgets/Map": {
+    "aimms.widget.type": {
+      "literal": "map-v2"
+    },
+    "arcs.__display_order__": {
+      "literal": [
+        "arcs.0"
+      ]
+    },
+    "arcs.0": {
+      "aimms": {
+        "contents": [
+          "v_transportation"
+        ],
+        "slices": [
+          {
+            "identifier": "v_transportation",
+            "slice": [
+              {
+                "index": "l",
+                "type": "free",
+                "value": "l"
+              },
+              {
+                "index": "m",
+                "type": "free",
+                "value": "m"
+              },
+              {
+                "index": "t",
+                "type": "fixed-element",
+                "value": "Monday"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "arcs.0.label.hide": {
+      "literal": true
+    },
+    "arcs.0.line.straight": {
+      "literal": false
+    },
+    "arcs.0.value": {
+      "literal": {
+        "identifier": "v_transportation",
+        "slice": [
+          {
+            "index": "l",
+            "type": "free",
+            "value": "l"
+          },
+          {
+            "index": "m",
+            "type": "free",
+            "value": "m"
+          },
+          {
+            "index": "t",
+            "type": "fixed-element",
+            "value": "Monday"
+          }
+        ]
+      }
+    },
+    "arcs.0.width.dynamic": {
+      "literal": true
+    },
+    "center.latitude": {
+      "literal": 21.616579336740604
+    },
+    "center.longitude": {
+      "literal": 79.63769584894182
+    },
+    "heatmaps.__display_order__": {
+      "literal": [
+        "heatmaps.0"
+      ]
+    },
+    "name": {
+      "literal": "Map"
+    },
+    "nodes.__display_order__": {
+      "literal": [
+        "nodes.0"
+      ]
+    },
+    "nodes.0": {
+      "aimms": {
+        "contents": [
+          "p_longitude",
+          "p_latitude",
+          "p_population"
+        ],
+        "slices": [
+          {
+            "identifier": "p_longitude",
+            "slice": [
+              {
+                "index": "l",
+                "type": "free",
+                "value": "l"
+              }
+            ]
+          },
+          {
+            "identifier": "p_latitude",
+            "slice": [
+              {
+                "index": "l",
+                "type": "free",
+                "value": "l"
+              }
+            ]
+          },
+          {
+            "identifier": "p_population",
+            "slice": [
+              {
+                "index": "l",
+                "type": "free",
+                "value": "l"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "nodes.0.index": {
+      "literal": {
+        "identifier": "l"
+      }
+    },
+    "nodes.0.latitude": {
+      "literal": {
+        "identifier": "p_latitude",
+        "slice": [
+          {
+            "index": "l",
+            "type": "free",
+            "value": "l"
+          }
+        ]
+      }
+    },
+    "nodes.0.longitude": {
+      "literal": {
+        "identifier": "p_longitude",
+        "slice": [
+          {
+            "index": "l",
+            "type": "free",
+            "value": "l"
+          }
+        ]
+      }
+    },
+    "nodes.0.size": {
+      "literal": {
+        "identifier": "p_population",
+        "slice": [
+          {
+            "index": "l",
+            "type": "free",
+            "value": "l"
+          }
+        ]
+      }
+    },
+    "title": {
+      "literal": "Network flow"
+    },
+    "zoom": {
+      "literal": 5
+    }
+  }
+}

@@ -92,6 +92,10 @@ Model Main_Distribution_Flow {
 			IndexDomain: (l,t) | p_locationType(l,'Factory');
 			Range: nonnegative;
 		}
+		Constraint c_supply {
+			IndexDomain: (l,t);
+			Definition: v_production(l,t) <= p_supply(l);
+		}
 		Constraint c_nodeEquilibrium {
 			IndexDomain: (l,t);
 			Definition: {

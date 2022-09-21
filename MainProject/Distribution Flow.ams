@@ -181,6 +181,21 @@ Model Main_Distribution_Flow {
 				Range: s_locations;
 			}
 		}
+		Procedure pr_generateData {
+			Body: {
+				p_scale := 1/1000;
+				
+				empty p_demand, p_supply;
+				s_time := {'Monday'}; !'Tuesday', 'Wednesday'};
+				
+				p_demand(l, t) := round(p_population(l) *(1 + uniform(-0.1,0.1))*p_scale);
+				
+				p_supply(l) | p_locationType(l, 'Factory') := max(t,sum((m),p_demand(m, t))) / (sum(m, p_locationType(m, 'Factory'))*card(s_time));
+				
+				p_distance(l, m) := sqrt(((p_latitude(l) - p_latitude(m)) * 111.320 * cos(radians(1/2 * (p_latitude(l) + p_latitude(m)))))^2 + ((p_latitude(l) - p_latitude(m)) * 110.574 )^2) *1;
+			}
+			Parameter p_scale;
+		}
 	}
 	Section MathModel {
 		Parameter p_isArcAllowed {

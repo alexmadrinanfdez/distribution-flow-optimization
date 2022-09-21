@@ -215,10 +215,10 @@
       "literal": true
     },
     "center.latitude": {
-      "literal": 20.59165400396276
+      "literal": 57.40235530015957
     },
     "center.longitude": {
-      "literal": 79.91015598177913
+      "literal": 16.523448228836064
     },
     "heatmaps.__display_order__": {
       "literal": [
@@ -319,7 +319,7 @@
       "literal": "Network flow"
     },
     "zoom": {
-      "literal": 5
+      "literal": 3
     }
   }
 }

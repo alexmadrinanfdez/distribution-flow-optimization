@@ -68,19 +68,22 @@ Model Main_Distribution_Flow {
 		}
 		Procedure pr_readTable {
 			Body: {
-				empty ExcelData;
+				empty ImportData;
 				! read from table db_coordinates;
 				read from table dbpr_query;
 			}
 		}
 	}
-	Section ExcelData {
+	Section ImportData {
 		Set s_locations {
 			Index: l, m;
 			webui::AnnotationsIdentifier: sp_locationType;
 		}
 		Set s_locationTypes {
 			Index: typ;
+			Definition: {
+				{'RDC', 'NDC', 'Factory'}
+			}
 		}
 		Set s_time {
 			Index: t;
@@ -137,6 +140,46 @@ Model Main_Distribution_Flow {
 		}
 		Parameter p_population {
 			IndexDomain: l;
+		}
+		Procedure pr_chooseLocationType {
+			Body: {
+				! Import database and empty initial data
+				pr_readTable;
+				
+				! The rest of the locations should be all RDCs
+				p_locationType(l, 'RDC') := 1;
+				
+				Option seed = 42;
+				
+				s_otherLocations := s_locations; ! define a subset with non-chosen locations
+				
+				! choose randomly 5 factories
+				while sum(l, p_locationType(l, 'Factory')) < 5 do
+				      ep_location := Element( 
+				      	s_otherLocations, 
+				      	round( uniform( 0.5, card(s_otherLocations)+0.5 ) )
+				      );
+				      p_locationType(ep_location, 'Factory') :=1;
+				      p_locationType(ep_location, 'RDC') := 0;
+				      s_otherLocations -= ep_location;
+				endwhile;
+				
+				! choose randomly 3 NDCs
+				while sum(l, p_locationType(l, 'NDC')) < 3 do
+				      ep_location := Element(
+				      	s_otherLocations, 
+				      	round( uniform( 0.5, card(s_otherLocations)+0.5) )
+				      );
+				      p_locationType(ep_location, 'NDC') :=1;
+				      s_otherLocations -= ep_location;
+				endwhile;
+			}
+			Set s_otherLocations {
+				SubsetOf: s_locations;
+			}
+			ElementParameter ep_location {
+				Range: s_locations;
+			}
 		}
 	}
 	Section MathModel {

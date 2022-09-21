@@ -38,6 +38,42 @@ Model Main_Distribution_Flow {
 			}
 		}
 	}
+	Section DatabaseImport {
+		DatabaseTable db_coordinates {
+			DataSource: {
+				"Driver=MySQL ODBC 8.0 Unicode Driver;Server=127.0.0.1;Port=3306;Database=world;User=root;Password=root;NO_SCHEMA=false;NO_CATALOG=true"
+			}
+			TableName: "coordinates";
+			Owner: "world";
+			Mapping: {
+				"city" -->l,
+				"lat"  -->p_latitude,
+				"lng"  -->p_longitude,
+				"pop"  -->p_population
+			}
+		}
+		DatabaseProcedure dbpr_query {
+			DataSource: {
+				"Driver=MySQL ODBC 8.0 Unicode Driver;Server=127.0.0.1;Port=3306;Database=world;User=root;Password=root;NO_SCHEMA=false;NO_CATALOG=true"
+			}
+			SqlQuery: "SELECT * FROM `coordinates` WHERE (pop > 300000 AND lat > 40 AND lat < 70 AND lng > -20 AND lng < 20)";
+			Owner: "world";
+			Property: UseResultSet;
+			Mapping: {
+				"city" -->l,
+				"lat"  -->p_latitude,
+				"lng"  -->p_longitude,
+				"pop"  -->p_population
+			}
+		}
+		Procedure pr_readTable {
+			Body: {
+				empty ExcelData;
+				! read from table db_coordinates;
+				read from table dbpr_query;
+			}
+		}
+	}
 	Section ExcelData {
 		Set s_locations {
 			Index: l, m;

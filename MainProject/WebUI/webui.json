@@ -108,7 +108,7 @@
     "contents": {
       "aimms": {
         "contents": [
-          "p_locationType"
+          "bp_locationType"
         ],
         "prefix": "aimms",
         "partition": {

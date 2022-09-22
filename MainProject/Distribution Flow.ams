@@ -2,18 +2,18 @@
 
 Model Main_Distribution_Flow {
 	Section ExcelImport {
-		StringParameter WorkbookName;
-		Procedure ReadFromExcel {
+		StringParameter sp_workbookName;
+		Procedure pr_readFromExcel {
 			Body: {
-				if not FileSelect(WorkbookName,extension:".xlsx") then
+				if not FileSelect(sp_workbookName,extension:".xlsx") then
 					return;
 				endif;
 				
 				axll::CloseAllWorkBooks;
-				axll::OpenWorkBook(WorkbookName);
+				axll::OpenWorkBook(sp_workbookName);
 				
 				axll::SelectSheet("Location Type");
-				axll::ReadList(p_locationType,"A2:B121","C2:C121",ModeForUnknownElements :  1); 
+				axll::ReadList(bp_locationType,"A2:B121","C2:C121",ModeForUnknownElements :  1); 
 				
 				axll::SelectSheet("Distances Between Locations");
 				axll::ReadTable(p_distance, "A2:A122", "B1:DR1", "B2:DR122", 1);
@@ -88,18 +88,18 @@ Model Main_Distribution_Flow {
 		Set s_time {
 			Index: t;
 		}
-		Parameter p_locationType {
+		Parameter bp_locationType {
 			IndexDomain: (l,typ);
 			Range: binary;
 		}
 		StringParameter sp_locationType {
 			IndexDomain: l;
 			Definition: {
-				if p_locationType(l, 'Factory') then
+				if bp_locationType(l, 'Factory') then
 					"Factory"
-				elseif p_locationType(l, 'NDC') then
+				elseif bp_locationType(l, 'NDC') then
 					"NDC"
-				elseif p_locationType(l, 'RDC') then
+				elseif bp_locationType(l, 'RDC') then
 					"RDC"
 				endif
 			}
@@ -125,9 +125,9 @@ Model Main_Distribution_Flow {
 		Parameter p_transportCost {
 			IndexDomain: (l,m);
 			Definition: {
-				if p_locationType(l,'Factory') and p_locationType(m,'NDC') then ! primary flow
+				if bp_locationType(l,'Factory') and bp_locationType(m,'NDC') then ! primary flow
 					0.8
-				elseif p_locationType(l,'NDC') and p_locationType(m,'RDC') then ! secondary flow
+				elseif bp_locationType(l,'NDC') and bp_locationType(m,'RDC') then ! secondary flow
 					1.2
 				endif
 			}
@@ -147,30 +147,30 @@ Model Main_Distribution_Flow {
 				pr_readTable;
 				
 				! The rest of the locations should be all RDCs
-				p_locationType(l, 'RDC') := 1;
+				bp_locationType(l, 'RDC') := 1;
 				
 				Option seed = 42;
 				
 				s_otherLocations := s_locations; ! define a subset with non-chosen locations
 				
 				! choose randomly 5 factories
-				while sum(l, p_locationType(l, 'Factory')) < 5 do
+				while sum(l, bp_locationType(l, 'Factory')) < 5 do
 				      ep_location := Element( 
 				      	s_otherLocations, 
 				      	round( uniform( 0.5, card(s_otherLocations)+0.5 ) )
 				      );
-				      p_locationType(ep_location, 'Factory') :=1;
-				      p_locationType(ep_location, 'RDC') := 0;
+				      bp_locationType(ep_location, 'Factory') :=1;
+				      bp_locationType(ep_location, 'RDC') := 0;
 				      s_otherLocations -= ep_location;
 				endwhile;
 				
 				! choose randomly 3 NDCs
-				while sum(l, p_locationType(l, 'NDC')) < 3 do
+				while sum(l, bp_locationType(l, 'NDC')) < 3 do
 				      ep_location := Element(
 				      	s_otherLocations, 
 				      	round( uniform( 0.5, card(s_otherLocations)+0.5) )
 				      );
-				      p_locationType(ep_location, 'NDC') :=1;
+				      bp_locationType(ep_location, 'NDC') :=1;
 				      s_otherLocations -= ep_location;
 				endwhile;
 			}
@@ -190,7 +190,7 @@ Model Main_Distribution_Flow {
 				
 				p_demand(l, t) := round(p_population(l) *(1 + uniform(-0.1,0.1))*p_scale);
 				
-				p_supply(l) | p_locationType(l, 'Factory') := max(t,sum((m),p_demand(m, t))) / (sum(m, p_locationType(m, 'Factory'))*card(s_time));
+				p_supply(l) | bp_locationType(l, 'Factory') := max(t,sum((m),p_demand(m, t))) / (sum(m, bp_locationType(m, 'Factory'))*card(s_time));
 				
 				p_distance(l, m) := sqrt(((p_latitude(l) - p_latitude(m)) * 111.320 * cos(radians(1/2 * (p_latitude(l) + p_latitude(m)))))^2 + ((p_latitude(l) - p_latitude(m)) * 110.574 )^2) *1;
 			}
@@ -198,20 +198,21 @@ Model Main_Distribution_Flow {
 		}
 	}
 	Section MathModel {
-		Parameter p_isArcAllowed {
+		Parameter bp_isArcAllowed {
 			IndexDomain: (l,m);
+			Range: binary;
 			Definition: {
-				p_locationType(l,'Factory') and p_locationType(m,'NDC') ! primary flow
+				bp_locationType(l,'Factory') and bp_locationType(m,'NDC') ! primary flow
 				or
-				p_locationType(l,'NDC') and p_locationType(m,'RDC')     ! secondary flow
+				bp_locationType(l,'NDC') and bp_locationType(m,'RDC')     ! secondary flow
 			}
 		}
 		Variable v_transportation {
-			IndexDomain: (l,m,t) | p_isArcAllowed(l,m);
+			IndexDomain: (l,m,t) | bp_isArcAllowed(l,m);
 			Range: nonnegative;
 		}
 		Variable v_production {
-			IndexDomain: (l,t) | p_locationType(l,'Factory');
+			IndexDomain: (l,t) | bp_locationType(l,'Factory');
 			Range: nonnegative;
 		}
 		Constraint c_supply {
@@ -253,7 +254,7 @@ Model Main_Distribution_Flow {
 	}
 	Procedure PostMainInitialization {
 		Body: {
-			ReadFromExcel;
+			pr_readFromExcel;
 		}
 		Comment: {
 			"Add initialization statements here that require that the libraries are already initialized properly,

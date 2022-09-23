@@ -3,7 +3,7 @@
 Model Main_Distribution_Flow {
 	Section ExcelImport {
 		StringParameter sp_workbookName;
-		Procedure pr_readFromExcel {
+		Procedure pr_readExcel {
 			Body: {
 				if not FileSelect(sp_workbookName,extension:".xlsx") then
 					return;
@@ -19,6 +19,20 @@ Model Main_Distribution_Flow {
 				axll::ReadList(p_population,"A2:A7323","E2:E7323",ModeForUnknownElements :  1);
 				
 				axll::CloseAllWorkBooks;
+			}
+		}
+		Procedure pr_filterCities {
+			Body: {
+				for (l in s_locations | p_population(l) > 300000 and 
+					p_latitude(l) > 40 and p_latitude(l) < 70 and 
+					p_longitude(l) > -20 and p_longitude(l) < 20) do
+						s_locationsFiltered += l;
+				endfor;
+				
+				s_locations := s_locationsFiltered;
+			}
+			Set s_locationsFiltered {
+				SubsetOf: s_locations;
 			}
 		}
 	}
@@ -52,7 +66,6 @@ Model Main_Distribution_Flow {
 		}
 		Procedure pr_readTable {
 			Body: {
-				empty ImportData;
 				! read from table db_coordinates;
 				read from table dbpr_query;
 			}
@@ -127,9 +140,6 @@ Model Main_Distribution_Flow {
 		}
 		Procedure pr_chooseLocationType {
 			Body: {
-				! Import database and empty initial data
-				pr_readTable;
-				
 				! The rest of the locations should be all RDCs
 				bp_locationType(l, 'RDC') := 1;
 				
@@ -238,7 +248,13 @@ Model Main_Distribution_Flow {
 	}
 	Procedure PostMainInitialization {
 		Body: {
-			pr_readFromExcel;
+			! pr_readExcel;
+			! pr_filterCities;
+			
+			pr_readTable;
+			
+			pr_chooseLocationType;
+			pr_generateData;
 		}
 		Comment: {
 			"Add initialization statements here that require that the libraries are already initialized properly,

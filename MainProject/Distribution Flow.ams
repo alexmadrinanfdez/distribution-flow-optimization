@@ -12,27 +12,11 @@ Model Main_Distribution_Flow {
 				axll::CloseAllWorkBooks;
 				axll::OpenWorkBook(sp_workbookName);
 				
-				axll::SelectSheet("Location Type");
-				axll::ReadList(bp_locationType,"A2:B121","C2:C121",ModeForUnknownElements :  1); 
+				axll::SelectSheet("coordinates");
 				
-				axll::SelectSheet("Distances Between Locations");
-				axll::ReadTable(p_distance, "A2:A122", "B1:DR1", "B2:DR122", 1);
-				
-				axll::SelectSheet("Demand");
-				axll::ReadList(p_demand,"A2:B337","C2:C337",ModeForUnknownElements :  1); 
-				
-				axll::SelectSheet("Supply");
-				axll::ReadList(p_supply,"A2:A6","B2:B6",ModeForUnknownElements :  1); 
-				
-				axll::SelectSheet("Stock");
-				axll::ReadList(p_minStock,"A2:A9","B2:B9",ModeForUnknownElements :  1);
-				axll::ReadList(p_maxStock,"A2:A9","C2:C9",ModeForUnknownElements :  1);
-				axll::ReadList(p_startStock,"A2:A9","E2:E9",ModeForUnknownElements :  1);
-				
-				axll::SelectSheet("Coordinates");
-				axll::ReadList(p_longitude,"A2:A122","B2:B122",ModeForUnknownElements :  1);
-				axll::ReadList(p_latitude,"A2:A122","C2:C122",ModeForUnknownElements :  1);
-				axll::ReadList(p_population,"A2:A122","D2:D122",ModeForUnknownElements :  1);
+				axll::ReadList(p_latitude,"A2:A7323","C2:C7323",ModeForUnknownElements :  1);
+				axll::ReadList(p_longitude,"A2:A7323","D2:D7323",ModeForUnknownElements :  1);
+				axll::ReadList(p_population,"A2:A7323","E2:E7323",ModeForUnknownElements :  1);
 				
 				axll::CloseAllWorkBooks;
 			}
@@ -149,7 +133,7 @@ Model Main_Distribution_Flow {
 				! The rest of the locations should be all RDCs
 				bp_locationType(l, 'RDC') := 1;
 				
-				Option seed = 42;
+				Option seed = 42; ! Fix pseudo-random results
 				
 				s_otherLocations := s_locations; ! define a subset with non-chosen locations
 				

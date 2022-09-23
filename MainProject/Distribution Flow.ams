@@ -235,11 +235,12 @@ Model Main_Distribution_Flow {
 	Section WebUISupport {
 		StringParameter sp_primaryAction {
 			IndexDomain: webui::indexPageActionSpec;
-			Comment: {
-				"displaytext	Solve
-				icon		aimms-paperplane
-				procedure	MainExecution
-				state		Active"
+			Definition: {
+				if webui::indexPageActionSpec = 'displaytext' then "Solve"
+				elseif webui::indexPageActionSpec = 'icon' then "aimms-paperplane"
+				elseif webui::indexPageActionSpec = 'procedure' then "MainExecution"
+				elseif webui::indexPageActionSpec = 'state' then "Active"
+				endif
 			}
 		}
 	}

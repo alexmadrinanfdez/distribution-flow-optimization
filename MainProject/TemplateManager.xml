@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<TemplateManager>
+	<Page Name="All Data Pages" PageGUID="80F6DA9A-9110-4F3A-BCF1-FF6E0E68D65D" />
+	<Page Name="[Data Page] p_demand" PageGUID="07B44BA1-43B2-449F-BDD1-313C8492551C" />
+	<Page Name="[Data Page] v_transportation" PageGUID="DED13558-3F5A-49E5-AB7E-339D2CFD8721" />
+</TemplateManager>

@@ -5,7 +5,7 @@ Model Main_Distribution_Flow {
 		StringParameter sp_workbookName;
 		Procedure pr_readExcel {
 			Body: {
-				if not FileSelect(sp_workbookName,extension:".xlsx") then
+				if not FileSelect(sp_workbookName, extension:".xlsx") then
 					return;
 				endif;
 				
@@ -14,9 +14,9 @@ Model Main_Distribution_Flow {
 				
 				axll::SelectSheet("coordinates");
 				
-				axll::ReadList(p_latitude,"A2:A7323","C2:C7323",ModeForUnknownElements :  1);
-				axll::ReadList(p_longitude,"A2:A7323","D2:D7323",ModeForUnknownElements :  1);
-				axll::ReadList(p_population,"A2:A7323","E2:E7323",ModeForUnknownElements :  1);
+				axll::ReadList(p_latitude, "A2:A7323", "C2:C7323", ModeForUnknownElements : 1);
+				axll::ReadList(p_longitude, "A2:A7323", "D2:D7323", ModeForUnknownElements : 1);
+				axll::ReadList(p_population, "A2:A7323", "E2:E7323", ModeForUnknownElements : 1);
 				
 				axll::CloseAllWorkBooks;
 			}
@@ -84,9 +84,12 @@ Model Main_Distribution_Flow {
 		}
 		Set s_time {
 			Index: t;
+			Definition: {
+				{'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'}
+			}
 		}
 		Parameter bp_locationType {
-			IndexDomain: (l,typ);
+			IndexDomain: (l, typ);
 			Range: binary;
 		}
 		StringParameter sp_locationType {
@@ -102,10 +105,10 @@ Model Main_Distribution_Flow {
 			}
 		}
 		Parameter p_distance {
-			IndexDomain: (l,m);
+			IndexDomain: (l, m);
 		}
 		Parameter p_demand {
-			IndexDomain: (l,t);
+			IndexDomain: (l, t);
 		}
 		Parameter p_supply {
 			IndexDomain: l;
@@ -120,12 +123,14 @@ Model Main_Distribution_Flow {
 			IndexDomain: l;
 		}
 		Parameter p_transportCost {
-			IndexDomain: (l,m);
+			IndexDomain: (l, m);
 			Definition: {
-				if bp_locationType(l,'Factory') and bp_locationType(m,'NDC') then ! primary flow
+				if bp_locationType(l, 'Factory') and bp_locationType(m, 'NDC') then ! primary flow
 					0.8
-				elseif bp_locationType(l,'NDC') and bp_locationType(m,'RDC') then ! secondary flow
+				elseif bp_locationType(l, 'NDC') and bp_locationType(m, 'RDC') then ! secondary flow
 					1.2
+				! else
+				!	 0
 				endif
 			}
 		}
@@ -140,12 +145,12 @@ Model Main_Distribution_Flow {
 		}
 		Procedure pr_chooseLocationType {
 			Body: {
-				! The rest of the locations should be all RDCs
+				! the rest of the locations should be all RDCs
 				bp_locationType(l, 'RDC') := 1;
 				
-				Option seed = 42; ! Fix pseudo-random results
+				Option seed = 42; ! fix pseudo-random results
 				
-				s_otherLocations := s_locations; ! define a subset with non-chosen locations
+				s_otherLocations := s_locations;
 				
 				! choose randomly 5 factories
 				while sum(l, bp_locationType(l, 'Factory')) < 5 do
@@ -153,7 +158,7 @@ Model Main_Distribution_Flow {
 				      	s_otherLocations, 
 				      	round( uniform( 0.5, card(s_otherLocations)+0.5 ) )
 				      );
-				      bp_locationType(ep_location, 'Factory') :=1;
+				      bp_locationType(ep_location, 'Factory') := 1;
 				      bp_locationType(ep_location, 'RDC') := 0;
 				      s_otherLocations -= ep_location;
 				endwhile;
@@ -164,7 +169,7 @@ Model Main_Distribution_Flow {
 				      	s_otherLocations, 
 				      	round( uniform( 0.5, card(s_otherLocations)+0.5) )
 				      );
-				      bp_locationType(ep_location, 'NDC') :=1;
+				      bp_locationType(ep_location, 'NDC') := 1;
 				      s_otherLocations -= ep_location;
 				endwhile;
 			}
@@ -177,52 +182,51 @@ Model Main_Distribution_Flow {
 		}
 		Procedure pr_generateData {
 			Body: {
-				p_scale := 1/1000;
+				p_scale := 1 / 1000;
 				
-				empty p_demand, p_supply;
-				s_time := {'Monday'}; !'Tuesday', 'Wednesday'};
-				
-				p_demand(l, t) := round(p_population(l) *(1 + uniform(-0.1,0.1))*p_scale);
-				
-				p_supply(l) | bp_locationType(l, 'Factory') := max(t,sum((m),p_demand(m, t))) / (sum(m, bp_locationType(m, 'Factory'))*card(s_time));
-				
-				p_distance(l, m) := sqrt(((p_latitude(l) - p_latitude(m)) * 111.320 * cos(radians(1/2 * (p_latitude(l) + p_latitude(m)))))^2 + ((p_latitude(l) - p_latitude(m)) * 110.574 )^2) *1;
+				! demand is proportional to the population, but with a small random noise
+				p_demand(l, t) := round( p_population(l) * (1 + uniform(-0.1, 0.1)) * p_scale );
+				! supply should always meet our previously generated demand to not produce a infeasible model (balanced network model)
+				p_supply(l) | bp_locationType(l, 'Factory') := max( t, sum(m, p_demand(m, t)) ) / sum(m, bp_locationType(m, 'Factory'));
+				! distance between two points on a sphere can be computed by the Haversine formula
+				p_distance(l, m) := 
+					sqrt( ((p_latitude(l)-p_latitude(m)) * 111.320 * cos(radians(1/2 * (p_latitude(l)+p_latitude(m)))))^2 + ((p_latitude(l)-p_latitude(m)) * 110.574 )^2 ) * 1;
 			}
 			Parameter p_scale;
 		}
 	}
 	Section MathModel {
 		Parameter bp_isArcAllowed {
-			IndexDomain: (l,m);
+			IndexDomain: (l, m);
 			Range: binary;
 			Definition: {
-				bp_locationType(l,'Factory') and bp_locationType(m,'NDC') ! primary flow
+				bp_locationType(l, 'Factory') and bp_locationType(m, 'NDC') ! primary flow
 				or
-				bp_locationType(l,'NDC') and bp_locationType(m,'RDC')     ! secondary flow
+				bp_locationType(l, 'NDC') and bp_locationType(m, 'RDC')     ! secondary flow
 			}
 		}
 		Variable v_transportation {
-			IndexDomain: (l,m,t) | bp_isArcAllowed(l,m);
+			IndexDomain: (l, m, t) | bp_isArcAllowed(l, m);
 			Range: nonnegative;
 		}
 		Variable v_production {
-			IndexDomain: (l,t) | bp_locationType(l,'Factory');
+			IndexDomain: (l, t) | bp_locationType(l, 'Factory');
 			Range: nonnegative;
 		}
 		Constraint c_supply {
-			IndexDomain: (l,t);
-			Definition: v_production(l,t) <= p_supply(l);
+			IndexDomain: (l, t);
+			Definition: v_production(l, t) <= p_supply(l);
 		}
 		Constraint c_nodeEquilibrium {
-			IndexDomain: (l,t);
+			IndexDomain: (l, t);
 			Definition: {
 				! input = output
-				v_production(l,t) + sum(m,v_transportation(m,l,t)) = sum(m,v_transportation(l,m,t)) + p_demand(l,t)
+				v_production(l, t) + sum(m, v_transportation(m, l, t)) = sum(m, v_transportation(l, m, t)) + p_demand(l, t)
 			}
 		}
 		Variable v_objectiveFunction {
 			Range: free;
-			Definition: sum((l,m,t),v_transportation(l,m,t) * p_distance(l,m) * p_transportCost(l,m));
+			Definition: sum((l, m, t), v_transportation(l, m, t) * p_distance(l, m) * p_transportCost(l, m));
 		}
 		MathematicalProgram mp_minCost {
 			Objective: v_objectiveFunction;

@@ -107,22 +107,10 @@
     },
     "contents": {
       "aimms": {
+        "slices": [],
         "contents": [
           "bp_locationType"
-        ],
-        "prefix": "aimms",
-        "partition": {
-          "rowHeader": [
-            "l"
-          ],
-          "colHeader": [
-            "typ"
-          ],
-          "aggregated": [
-            "<IDENTIFIER-SET>"
-          ]
-        },
-        "slices": []
+        ]
       }
     },
     "contents.partition": {
@@ -157,11 +145,11 @@
     "arcs.0": {
       "aimms": {
         "contents": [
-          "v_transportation"
+          "p_averageTransport"
         ],
         "slices": [
           {
-            "identifier": "v_transportation",
+            "identifier": "p_averageTransport",
             "slice": [
               {
                 "index": "l",
@@ -172,11 +160,6 @@
                 "index": "m",
                 "type": "free",
                 "value": "m"
-              },
-              {
-                "index": "t",
-                "type": "fixed-element",
-                "value": "Monday"
               }
             ]
           }
@@ -186,12 +169,9 @@
     "arcs.0.label.hide": {
       "literal": true
     },
-    "arcs.0.line.straight": {
-      "literal": false
-    },
     "arcs.0.value": {
       "literal": {
-        "identifier": "v_transportation",
+        "identifier": "p_averageTransport",
         "slice": [
           {
             "index": "l",
@@ -202,11 +182,6 @@
             "index": "m",
             "type": "free",
             "value": "m"
-          },
-          {
-            "index": "t",
-            "type": "fixed-element",
-            "value": "Monday"
           }
         ]
       }
@@ -215,10 +190,10 @@
       "literal": true
     },
     "center.latitude": {
-      "literal": 52.289667919760479
+      "literal": 55
     },
     "center.longitude": {
-      "literal": 14.660155177116396
+      "literal": 11
     },
     "heatmaps.__display_order__": {
       "literal": [

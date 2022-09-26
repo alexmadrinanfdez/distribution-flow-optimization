@@ -92,18 +92,6 @@ Model Main_Distribution_Flow {
 			IndexDomain: (l, typ);
 			Range: binary;
 		}
-		StringParameter sp_locationType {
-			IndexDomain: l;
-			Definition: {
-				if bp_locationType(l, 'Factory') then
-					"Factory"
-				elseif bp_locationType(l, 'NDC') then
-					"NDC"
-				elseif bp_locationType(l, 'RDC') then
-					"RDC"
-				endif
-			}
-		}
 		Parameter p_distance {
 			IndexDomain: (l, m);
 		}
@@ -246,6 +234,22 @@ Model Main_Distribution_Flow {
 				elseif webui::indexPageActionSpec = 'state' then "Active"
 				endif
 			}
+		}
+		StringParameter sp_locationType {
+			IndexDomain: l;
+			Definition: {
+				if bp_locationType(l, 'Factory') then
+					"Factory"
+				elseif bp_locationType(l, 'NDC') then
+					"NDC"
+				elseif bp_locationType(l, 'RDC') then
+					"RDC"
+				endif
+			}
+		}
+		Parameter p_averageTransport {
+			IndexDomain: (l, m) | bp_isArcAllowed(l, m);
+			Definition: mean(t, v_transportation(l, m, t));
 		}
 	}
 	Procedure MainInitialization {

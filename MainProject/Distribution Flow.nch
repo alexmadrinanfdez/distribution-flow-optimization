@@ -13,3 +13,4 @@
 "p_isArcAllowed" "bp_isArcAllowed" "2022-09-21 22:04:16"
 "pr_readFromExcel" "pr_readExcel" "2022-09-23 18:54:45"
 "pr_filter" "pr_filterCities" "2022-09-23 19:30:14"
+"p_averageDemand" "p_averageTransport" "2022-09-26 17:31:58"

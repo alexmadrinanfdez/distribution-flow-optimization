@@ -37,10 +37,21 @@ Model Main_Distribution_Flow {
 		}
 	}
 	Section DatabaseImport {
-		DatabaseTable db_coordinates {
-			DataSource: {
-				"Driver=MySQL ODBC 8.0 Unicode Driver;Server=127.0.0.1;Port=3306;Database=world;User=root;Password=root;NO_SCHEMA=false;NO_CATALOG=true"
+		StringParameter sp_stringConnection {
+			Definition: {
+				SQLCreateConnectionString(
+				     DatabaseInterface: 'ODBC',
+				     DriverName: "MySQL ODBC 8.0 Unicode Driver",
+				     ServerName: "127.0.0.1",
+				     DatabaseName: "world",
+				     UserId: "root",
+				     Password: "root",
+				     AdditionalConnectionParameters: "NO_SCHEMA=false"
+				     )
 			}
+		}
+		DatabaseTable db_coordinates {
+			DataSource: sp_stringConnection;
 			TableName: "coordinates";
 			Owner: "world";
 			Mapping: {
@@ -51,9 +62,7 @@ Model Main_Distribution_Flow {
 			}
 		}
 		DatabaseProcedure dbpr_query {
-			DataSource: {
-				"Driver=MySQL ODBC 8.0 Unicode Driver;Server=127.0.0.1;Port=3306;Database=world;User=root;Password=root;NO_SCHEMA=false;NO_CATALOG=true"
-			}
+			DataSource: sp_stringConnection;
 			SqlQuery: "SELECT * FROM `coordinates` WHERE (pop > 300000 AND lat > 40 AND lat < 70 AND lng > -20 AND lng < 20)";
 			Owner: "world";
 			Property: UseResultSet;

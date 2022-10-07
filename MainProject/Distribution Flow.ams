@@ -23,9 +23,9 @@ Model Main_Distribution_Flow {
 		}
 		Procedure pr_filterCities {
 			Body: {
-				for (l in s_locations | p_population(l) > 300000 and 
-					p_latitude(l) > 40 and p_latitude(l) < 70 and 
-					p_longitude(l) > -20 and p_longitude(l) < 20) do
+				for (l in s_locations | p_population(l) > p_minPopulation and 
+					p_latitude(l) > p_minLatitude and p_latitude(l) < p_maxLatitude and 
+					p_longitude(l) > p_minLongitude and p_longitude(l) < p_maxLongitude) do
 						s_locationsFiltered += l;
 				endfor;
 				
@@ -63,7 +63,13 @@ Model Main_Distribution_Flow {
 		}
 		DatabaseProcedure dbpr_query {
 			DataSource: sp_stringConnection;
-			SqlQuery: "SELECT * FROM `coordinates` WHERE (pop > 300000 AND lat > 40 AND lat < 70 AND lng > -20 AND lng < 20)";
+			SqlQuery: {
+				"SELECT * FROM `coordinates` WHERE (" +
+					" pop > " + p_minPopulation +
+					" AND lat > " + p_minLatitude + " AND lat < " + p_maxLatitude +
+					" AND lng > " + p_minLongitude + " AND lng < " + p_maxLongitude +
+				" )"
+			}
 			Owner: "world";
 			Property: UseResultSet;
 			Mapping: {
@@ -139,6 +145,23 @@ Model Main_Distribution_Flow {
 		}
 		Parameter p_population {
 			IndexDomain: l;
+		}
+		DeclarationSection Filter {
+			Parameter p_minPopulation {
+				Definition: 300000;
+			}
+			Parameter p_minLatitude {
+				Definition: 40;
+			}
+			Parameter p_maxLatitude {
+				Definition: 70;
+			}
+			Parameter p_minLongitude {
+				Definition: -20;
+			}
+			Parameter p_maxLongitude {
+				Definition: 20;
+			}
 		}
 		Procedure pr_chooseLocationType {
 			Body: {

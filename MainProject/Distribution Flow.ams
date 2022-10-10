@@ -25,7 +25,8 @@ Model Main_Distribution_Flow {
 			Body: {
 				for (l in s_locations | p_population(l) > p_minPopulation and 
 					p_latitude(l) > p_minLatitude and p_latitude(l) < p_maxLatitude and 
-					p_longitude(l) > p_minLongitude and p_longitude(l) < p_maxLongitude) do
+					p_longitude(l) > p_minLongitude and p_longitude(l) < p_maxLongitude and
+					not l in s_locationsExcluded) do
 						s_locationsFiltered += l;
 				endfor;
 				
@@ -61,19 +62,6 @@ Model Main_Distribution_Flow {
 				"pop"  -->p_population
 			}
 		}
-		Procedure pr_sqlList {
-			Body: {
-				sp_locationsExcluded := "(";
-				for le in s_locationsExcluded do
-					if card(s_locationsExcluded) = ord(le) then
-						sp_locationsExcluded += "'" + le + "'"; ! last item in the list
-					else
-						sp_locationsExcluded += "'" + le + "'" + ", ";
-					endif;
-				endfor;
-				sp_locationsExcluded += ")";
-			}
-		}
 		DatabaseProcedure dbpr_query {
 			DataSource: sp_stringConnection;
 			SqlQuery: {
@@ -96,8 +84,6 @@ Model Main_Distribution_Flow {
 		Procedure pr_readTable {
 			Body: {
 				! read from table db_coordinates;
-				
-				pr_sqlList;
 				read from table dbpr_query;
 			}
 		}
@@ -179,13 +165,16 @@ Model Main_Distribution_Flow {
 				Definition: 25;
 			}
 			Set s_locationsExcluded {
+				SubsetOf: s_locations;
 				Index: le;
 				Definition: {
 					{ 'Tangier', 'Oran', 'Chlef', 'Blida', 'Algiers', 'Constantine', 'Annaba', 'Tunis' }
 				}
 				Comment: "Cities from the north of Africa that are inside the designated coordinates.";
 			}
-			StringParameter sp_locationsExcluded;
+			StringParameter sp_locationsExcluded {
+				Definition: "( 'Tangier', 'Oran', 'Chlef', 'Blida', 'Algiers', 'Constantine', 'Annaba', 'Tunis' )";
+			}
 		}
 		Procedure pr_chooseLocationType {
 			Body: {
@@ -313,9 +302,10 @@ Model Main_Distribution_Flow {
 	}
 	Procedure PostMainInitialization {
 		Body: {
+			! Excel input
 			! pr_readExcel;
 			! pr_filterCities;
-			
+			! DB input
 			pr_readTable;
 			
 			pr_chooseLocationType;

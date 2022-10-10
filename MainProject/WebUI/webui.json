@@ -190,10 +190,10 @@
       "literal": true
     },
     "center.latitude": {
-      "literal": 55
+      "literal": 50
     },
     "center.longitude": {
-      "literal": 11
+      "literal": 10
     },
     "heatmaps.__display_order__": {
       "literal": [

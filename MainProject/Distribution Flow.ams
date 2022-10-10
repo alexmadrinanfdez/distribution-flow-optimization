@@ -61,6 +61,19 @@ Model Main_Distribution_Flow {
 				"pop"  -->p_population
 			}
 		}
+		Procedure pr_sqlList {
+			Body: {
+				sp_locationsExcluded := "(";
+				for le in s_locationsExcluded do
+					if card(s_locationsExcluded) = ord(le) then
+						sp_locationsExcluded += "'" + le + "'"; ! last item in the list
+					else
+						sp_locationsExcluded += "'" + le + "'" + ", ";
+					endif;
+				endfor;
+				sp_locationsExcluded += ")";
+			}
+		}
 		DatabaseProcedure dbpr_query {
 			DataSource: sp_stringConnection;
 			SqlQuery: {
@@ -68,6 +81,7 @@ Model Main_Distribution_Flow {
 					" pop > " + p_minPopulation +
 					" AND lat > " + p_minLatitude + " AND lat < " + p_maxLatitude +
 					" AND lng > " + p_minLongitude + " AND lng < " + p_maxLongitude +
+					" AND city NOT IN " + sp_locationsExcluded +
 				" )"
 			}
 			Owner: "world";
@@ -82,6 +96,8 @@ Model Main_Distribution_Flow {
 		Procedure pr_readTable {
 			Body: {
 				! read from table db_coordinates;
+				
+				pr_sqlList;
 				read from table dbpr_query;
 			}
 		}
@@ -151,17 +167,25 @@ Model Main_Distribution_Flow {
 				Definition: 300000;
 			}
 			Parameter p_minLatitude {
-				Definition: 40;
+				Definition: 35;
 			}
 			Parameter p_maxLatitude {
 				Definition: 70;
 			}
 			Parameter p_minLongitude {
-				Definition: -20;
+				Definition: -25;
 			}
 			Parameter p_maxLongitude {
-				Definition: 20;
+				Definition: 25;
 			}
+			Set s_locationsExcluded {
+				Index: le;
+				Definition: {
+					{ 'Tangier', 'Oran', 'Chlef', 'Blida', 'Algiers', 'Constantine', 'Annaba', 'Tunis' }
+				}
+				Comment: "Cities from the north of Africa that are inside the designated coordinates.";
+			}
+			StringParameter sp_locationsExcluded;
 		}
 		Procedure pr_chooseLocationType {
 			Body: {

@@ -83,6 +83,13 @@
     "widgets": {
       "literal": [
         {
+          "uri": "Demand",
+          "layoutInfo": {
+            "width": "3",
+            "height": "4"
+          }
+        },
+        {
           "uri": "Location Type",
           "layoutInfo": {
             "width": "2",
@@ -93,12 +100,80 @@
         {
           "uri": "Map",
           "layoutInfo": {
-            "width": "5",
+            "width": "4",
             "height": "4",
             "customPosition": ""
           }
         }
       ]
+    }
+  },
+  "widgets/Demand": {
+    "aimms.widget.type": {
+      "literal": "table"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "p_demand"
+        ],
+        "prefix": "aimms",
+        "partition": {
+          "rowHeader": [
+            "l"
+          ],
+          "colHeader": [
+            "t"
+          ],
+          "aggregated": [
+            "<IDENTIFIER-SET>"
+          ]
+        },
+        "totals": [
+          {
+            "indexName": "t",
+            "operators": [
+              "mean_only_visible",
+              "mean"
+            ]
+          }
+        ],
+        "numdecimals": 0,
+        "slices": []
+      }
+    },
+    "contents.numdecimals": {
+      "literal": 0
+    },
+    "contents.partition": {
+      "literal": {
+        "rowHeader": [
+          "l"
+        ],
+        "colHeader": [
+          "t"
+        ],
+        "aggregated": [
+          "<IDENTIFIER-SET>"
+        ]
+      }
+    },
+    "contents.totals": {
+      "literal": [
+        {
+          "indexName": "t",
+          "operators": [
+            "mean_only_visible",
+            "mean"
+          ]
+        }
+      ]
+    },
+    "name": {
+      "literal": "Demand"
+    },
+    "title": {
+      "literal": "Demand"
     }
   },
   "widgets/Location Type": {

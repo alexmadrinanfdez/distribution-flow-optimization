@@ -5,6 +5,7 @@ Model Main_Distribution_Flow {
 		StringParameter sp_workbookName;
 		Procedure pr_readExcel {
 			Body: {
+				! CSV input - https://how-to.aimms.com/Articles/csv/read-write-csv.html
 				if not FileSelect(sp_workbookName, extension:".xlsx") then
 					return;
 				endif;
@@ -302,11 +303,11 @@ Model Main_Distribution_Flow {
 	}
 	Procedure PostMainInitialization {
 		Body: {
-			! Excel input
-			! pr_readExcel;
-			! pr_filterCities;
+			! Spreadsheet input
+			pr_readExcel;
+			pr_filterCities;
 			! DB input
-			pr_readTable;
+			! pr_readTable;
 			
 			pr_chooseLocationType;
 			pr_generateData;

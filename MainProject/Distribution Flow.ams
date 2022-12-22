@@ -1,17 +1,22 @@
 ## ams_version=1.0
 
 Model Main_Distribution_Flow {
-	Section ExcelImport {
-		StringParameter sp_workbookName;
+	Section SpreadsheetImport {
+		StringParameter sp_fileName;
+		StringParameter sp_communicationAttributes {
+			IndexDomain: dl::rwattr;
+		}
+		StringParameter sp_dataMap {
+			IndexDomain: (dl::dt,dl::idn,dl::cn,dl::dn);
+		}
 		Procedure pr_readExcel {
 			Body: {
-				! CSV input - https://how-to.aimms.com/Articles/csv/read-write-csv.html
-				if not FileSelect(sp_workbookName, extension:".xlsx") then
+				if not FileSelect(sp_fileName, directory:"data", extension:".xlsx") then
 					return;
 				endif;
 				
 				axll::CloseAllWorkBooks;
-				axll::OpenWorkBook(sp_workbookName);
+				axll::OpenWorkBook(sp_fileName);
 				
 				axll::SelectSheet("coordinates");
 				
@@ -21,6 +26,37 @@ Model Main_Distribution_Flow {
 				
 				axll::CloseAllWorkBooks;
 			}
+		}
+		Procedure pr_readCSV {
+			Body: {
+				dl::DataTables += {'coordinates'};
+				
+				sp_dataMap(
+				            dl::dt,    ! Table name, should be present in dl::DataTables.
+				            dl::idn,   ! Full AIMMS identifier name, enclose in '' iff it is declared in a library or module.
+				            dl::cn,    ! Column number
+				            dl::dn     ! Domain number
+				                       !     For domain sets: equal to the Column number
+				                       !     For parameters : equal to 0.
+				            ! contents: the names of the columns in the CSV files.
+				) := data {
+				    ( coordinates, s_locations, 1, 1 ) : "city",
+				    ( coordinates, p_latitude , 2, 0 ) : "lat",
+				    ( coordinates, p_longitude, 3, 0 ) : "lng",
+				    ( coordinates, p_population, 4, 0 ) : "pop"
+				};
+				
+				dl::RemoveDataSourceMapping("TheMapping");
+				dl::AddDataSourceMapping("TheMapping", sp_dataMap, dl::DependEmpty, dl::TableAttributesEmpty, dl::ColAttributeEmpty);
+				
+				sp_communicationAttributes :=
+				      { 'DataProvider' : csvprov::DataLink ,
+				        'ContainsHeaders' : "yes"
+				      }; ! Note that Separator attribute is left to its default of ",".
+				
+				dl::DataRead("data", "TheMapping", sp_communicationAttributes);
+			}
+			Comment: "https://how-to.aimms.com/Articles/csv/read-write-csv.html";
 		}
 		Procedure pr_filterCities {
 			Body: {
@@ -304,7 +340,8 @@ Model Main_Distribution_Flow {
 	Procedure PostMainInitialization {
 		Body: {
 			! Spreadsheet input
-			pr_readExcel;
+			! pr_readExcel;
+			pr_readCSV;
 			pr_filterCities;
 			! DB input
 			! pr_readTable;

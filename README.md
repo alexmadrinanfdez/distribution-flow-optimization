@@ -4,8 +4,8 @@ Basic application built in the [AIMMS](https://www.aimms.com) IDE that minimizes
 
 ## AIMMS
 
-AIMMS stands for *A*dvanced *I*nteractive *M*ultidimensional *M*odeling *S*ystem. It simplifies building and solving mathematical models.
-The software takes the shape of an IDE which main functionality is solving equations of __n__-dimensional vectors of parameters and variables, subject to constraints defined by the user.
+AIMMS stands for **A**dvanced **I**nteractive **M**ultidimensional **M**odeling **S**ystem. It simplifies building and solving mathematical models.
+The software takes the shape of an IDE which main functionality is solving equations of _n_-dimensional vectors of parameters and variables, subject to constraints defined by the user.
 
 ## Network
 
@@ -28,5 +28,4 @@ To read data from a DB, names of columns and schema must match the ones in the p
 The network is, by default, created automatically at initialization in Europe. Locations are fixed but the type of each location is random and changes each run.
 The user can remove locations and change their type. While adding locations is also possible, it requires modifying the program to read the desired data.
 
-![European (default) network](image/webapp-europe.png)
-![Indian network](image/webapp-india.png)
+![European (default) network](image/webapp.png)
